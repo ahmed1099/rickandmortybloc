@@ -7,7 +7,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 
 class CharactersScreen extends StatefulWidget {
-  const CharactersScreen({Key? key}) : super(key: key);
+  const CharactersScreen({
+    Key? key,
+  }) : super(
+          key: key,
+        );
 
   @override
   _CharactersScreenState createState() => _CharactersScreenState();
@@ -26,23 +30,43 @@ class _CharactersScreenState extends State<CharactersScreen> {
       decoration: const InputDecoration(
         hintText: 'Find a character...',
         border: InputBorder.none,
-        hintStyle: TextStyle(color: MyColors.myGrey, fontSize: 18),
+        hintStyle: TextStyle(
+          color: MyColors.myGrey,
+          fontSize: 18,
+        ),
       ),
-      style: const TextStyle(color: MyColors.myGrey, fontSize: 18),
-      onChanged: (searchedCharacter) {
-        addSearchedFOrItemsToSearchedList(searchedCharacter);
+      style: const TextStyle(
+        color: MyColors.myGrey,
+        fontSize: 18,
+      ),
+      onChanged: (
+        searchedCharacter,
+      ) {
+        addSearchedFOrItemsToSearchedList(
+          searchedCharacter,
+        );
       },
     );
   }
 
-  void addSearchedFOrItemsToSearchedList(String searchedCharacter) {
+  void addSearchedFOrItemsToSearchedList(
+    String searchedCharacter,
+  ) {
     searchedForCharacters = allCharacters
-        .where((character) =>
-            character.name?.toLowerCase().startsWith(searchedCharacter) ??
-            false)
+        .where(
+          (
+            character,
+          ) =>
+              character.name?.toLowerCase().startsWith(
+                    searchedCharacter,
+                  ) ??
+              false,
+        )
         .toList();
 
-    setState(() {});
+    setState(
+      () {},
+    );
   }
 
   List<Widget> _buildAppBarActions() {
@@ -51,9 +75,14 @@ class _CharactersScreenState extends State<CharactersScreen> {
         IconButton(
           onPressed: () {
             _clearSearch();
-            Navigator.pop(context);
+            Navigator.pop(
+              context,
+            );
           },
-          icon: const Icon(Icons.clear, color: MyColors.myGrey),
+          icon: const Icon(
+            Icons.clear,
+            color: MyColors.myGrey,
+          ),
         ),
       ];
     } else {
@@ -70,37 +99,54 @@ class _CharactersScreenState extends State<CharactersScreen> {
   }
 
   void _startSearch() {
-    ModalRoute.of(context)!
-        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+    ModalRoute.of(
+      context,
+    )!
+        .addLocalHistoryEntry(
+      LocalHistoryEntry(
+        onRemove: _stopSearching,
+      ),
+    );
 
-    setState(() {
-      _isSearching = true;
-    });
+    setState(
+      () {
+        _isSearching = true;
+      },
+    );
   }
 
   void _stopSearching() {
     _clearSearch();
 
-    setState(() {
-      _isSearching = false;
-    });
+    setState(
+      () {
+        _isSearching = false;
+      },
+    );
   }
 
   void _clearSearch() {
-    setState(() {
-      _searchTextController.clear();
-    });
+    setState(
+      () {
+        _searchTextController.clear();
+      },
+    );
   }
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<CharactersCubit>(context).getAllCharacters();
+    BlocProvider.of<CharactersCubit>(
+      context,
+    ).getAllCharacters();
   }
 
   Widget buildBlocWidget() {
     return BlocBuilder<CharactersCubit, CharactersState>(
-      builder: (context, state) {
+      builder: (
+        context,
+        state,
+      ) {
         if (state is CharactersLoaded) {
           allCharacters = (state).characters;
           return buildLoadedListWidgets();
@@ -146,7 +192,10 @@ class _CharactersScreenState extends State<CharactersScreen> {
       itemCount: _searchTextController.text.isEmpty
           ? allCharacters.length
           : searchedForCharacters.length,
-      itemBuilder: (ctx, index) {
+      itemBuilder: (
+        ctx,
+        index,
+      ) {
         return CharacterItem(
           character: _searchTextController.text.isEmpty
               ? allCharacters[index]
@@ -159,7 +208,9 @@ class _CharactersScreenState extends State<CharactersScreen> {
   Widget _buildAppBarTitle() {
     return const Text(
       'Characters',
-      style: TextStyle(color: MyColors.myGrey),
+      style: TextStyle(
+        color: MyColors.myGrey,
+      ),
     );
   }
 
@@ -180,7 +231,9 @@ class _CharactersScreenState extends State<CharactersScreen> {
                 color: MyColors.myGrey,
               ),
             ),
-            Image.asset('assets/images/no_internet.png')
+            Image.asset(
+              'assets/images/no_internet.png',
+            )
           ],
         ),
       ),
@@ -188,7 +241,9 @@ class _CharactersScreenState extends State<CharactersScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: MyColors.myYellow,

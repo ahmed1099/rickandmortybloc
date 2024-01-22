@@ -6,25 +6,47 @@ import 'package:flutter/material.dart';
 class CharacterItem extends StatelessWidget {
   final Character character;
 
-  const CharacterItem({Key? key, required this.character}) : super(key: key);
+  const CharacterItem({
+    Key? key,
+    required this.character,
+  }) : super(
+          key: key,
+        );
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 8),
-      padding: const EdgeInsetsDirectional.all(4),
+      margin: const EdgeInsetsDirectional.fromSTEB(
+        8,
+        8,
+        8,
+        8,
+      ),
+      padding: const EdgeInsetsDirectional.all(
+        4,
+      ),
       decoration: BoxDecoration(
         color: MyColors.myWhite,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(
+          8,
+        ),
       ),
       child: InkWell(
-        onTap: () => Navigator.pushNamed(context, characterDetailsScreen,
-            arguments: character),
+        onTap: () => Navigator.pushNamed(
+          context,
+          characterDetailsScreen,
+          arguments: character,
+        ),
         child: GridTile(
           footer: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 10,
+            ),
             color: Colors.black54,
             alignment: Alignment.bottomCenter,
             child: Text(
@@ -52,7 +74,9 @@ class CharacterItem extends StatelessWidget {
                       image: character.image!,
                       fit: BoxFit.cover,
                     )
-                  : Image.asset('assets/images/placeholder.jpg'),
+                  : Image.asset(
+                      'assets/images/placeholder.jpg',
+                    ),
             ),
           ),
         ),
