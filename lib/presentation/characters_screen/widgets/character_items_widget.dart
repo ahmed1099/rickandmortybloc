@@ -1,5 +1,5 @@
+import 'package:bloc_demo/app_router.dart';
 import 'package:bloc_demo/constants/colors.dart';
-import 'package:bloc_demo/constants/strings.dart';
 import 'package:bloc_demo/data/models/characters_model.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +37,7 @@ class CharacterItem extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.pushNamed(
           context,
-          characterDetailsScreen,
+          AppRouter.characterDetailsScreen,
           arguments: character,
         ),
         child: GridTile(
