@@ -1,5 +1,6 @@
-import 'package:bloc_demo/app_router.dart';
 import 'package:flutter/material.dart';
+
+import 'app_router.dart';
 
 void main() {
   runApp(
@@ -16,9 +17,10 @@ class BLoCApp extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      onGenerateRoute: appRouter.generateRoute,
+      onGenerateRoute: AppRouter.generateRoute,
+      initialRoute: AppRouter.charactersScreen,
     );
   }
 }

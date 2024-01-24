@@ -1,53 +1,30 @@
-import 'package:bloc_demo/business_logic/cubit/cubit/characters_cubit.dart';
 import 'package:bloc_demo/constants/colors.dart';
 import 'package:bloc_demo/data/models/characters_model.dart';
-import 'package:bloc_demo/presentation/characters_screen/widgets/character_items_widget.dart';
+import 'package:bloc_demo/generic_cubit/generic_cubit.dart';
+import 'package:bloc_demo/presentation/characters_screen/characters_screen_view_model.dart';
+import 'package:bloc_demo/presentation/characters_screen/widgets/build_characters_list.dart';
+import 'package:bloc_demo/presentation/characters_screen/widgets/build_no_internet_widget.dart';
+import 'package:bloc_demo/presentation/characters_screen/widgets/show_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 
 class CharactersScreen extends StatefulWidget {
   const CharactersScreen({
-    Key? key,
-  }) : super(
-          key: key,
-        );
+    super.key,
+  });
 
   @override
-  _CharactersScreenState createState() => _CharactersScreenState();
+  State<CharactersScreen> createState() => _CharactersScreenState();
 }
 
 class _CharactersScreenState extends State<CharactersScreen> {
-  late List<Character> allCharacters;
-  late List<Character> searchedForCharacters;
+  CharactersScreenViewModel charactersScreenViewModel =
+      CharactersScreenViewModel();
+  List<Character> allCharacters = [];
+  List<Character> searchedForCharacters = [];
   bool _isSearching = false;
-  final _searchTextController = TextEditingController();
-
-  Widget _buildSearchField() {
-    return TextField(
-      controller: _searchTextController,
-      cursorColor: MyColors.myGrey,
-      decoration: const InputDecoration(
-        hintText: 'Find a character...',
-        border: InputBorder.none,
-        hintStyle: TextStyle(
-          color: MyColors.myGrey,
-          fontSize: 18,
-        ),
-      ),
-      style: const TextStyle(
-        color: MyColors.myGrey,
-        fontSize: 18,
-      ),
-      onChanged: (
-        searchedCharacter,
-      ) {
-        addSearchedFOrItemsToSearchedList(
-          searchedCharacter,
-        );
-      },
-    );
-  }
+  final searchTextController = TextEditingController();
 
   void addSearchedFOrItemsToSearchedList(
     String searchedCharacter,
@@ -128,116 +105,15 @@ class _CharactersScreenState extends State<CharactersScreen> {
   void _clearSearch() {
     setState(
       () {
-        _searchTextController.clear();
+        searchTextController.clear();
       },
     );
   }
 
   @override
   void initState() {
+    charactersScreenViewModel.initData();
     super.initState();
-    BlocProvider.of<CharactersCubit>(
-      context,
-    ).getAllCharacters();
-  }
-
-  Widget buildBlocWidget() {
-    return BlocBuilder<CharactersCubit, CharactersState>(
-      builder: (
-        context,
-        state,
-      ) {
-        if (state is CharactersLoaded) {
-          allCharacters = (state).characters;
-          return buildLoadedListWidgets();
-        } else {
-          return showLoadingIndicator();
-        }
-      },
-    );
-  }
-
-  Widget showLoadingIndicator() {
-    return const Center(
-      child: CircularProgressIndicator(
-        color: MyColors.myYellow,
-      ),
-    );
-  }
-
-  Widget buildLoadedListWidgets() {
-    return SingleChildScrollView(
-      child: Container(
-        color: MyColors.myGrey,
-        child: Column(
-          children: [
-            buildCharactersList(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildCharactersList() {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 2 / 3,
-        crossAxisSpacing: 1,
-        mainAxisSpacing: 1,
-      ),
-      shrinkWrap: true,
-      physics: const ClampingScrollPhysics(),
-      padding: EdgeInsets.zero,
-      itemCount: _searchTextController.text.isEmpty
-          ? allCharacters.length
-          : searchedForCharacters.length,
-      itemBuilder: (
-        ctx,
-        index,
-      ) {
-        return CharacterItem(
-          character: _searchTextController.text.isEmpty
-              ? allCharacters[index]
-              : searchedForCharacters[index],
-        );
-      },
-    );
-  }
-
-  Widget _buildAppBarTitle() {
-    return const Text(
-      'Characters',
-      style: TextStyle(
-        color: MyColors.myGrey,
-      ),
-    );
-  }
-
-  Widget buildNoInternetWidget() {
-    return Center(
-      child: Container(
-        color: Colors.white,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              'Can\'t connect .. check internet',
-              style: TextStyle(
-                fontSize: 22,
-                color: MyColors.myGrey,
-              ),
-            ),
-            Image.asset(
-              'assets/images/no_internet.png',
-            )
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -252,7 +128,36 @@ class _CharactersScreenState extends State<CharactersScreen> {
                 color: MyColors.myGrey,
               )
             : Container(),
-        title: _isSearching ? _buildSearchField() : _buildAppBarTitle(),
+        title: _isSearching
+            ? TextField(
+                controller: searchTextController,
+                cursorColor: MyColors.myGrey,
+                decoration: const InputDecoration(
+                  hintText: 'Find a character...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(
+                    color: MyColors.myGrey,
+                    fontSize: 18,
+                  ),
+                ),
+                style: const TextStyle(
+                  color: MyColors.myGrey,
+                  fontSize: 18,
+                ),
+                onChanged: (
+                  searchedCharacter,
+                ) {
+                  addSearchedFOrItemsToSearchedList(
+                    searchedCharacter,
+                  );
+                },
+              )
+            : const Text(
+                'Characters',
+                style: TextStyle(
+                  color: MyColors.myGrey,
+                ),
+              ),
         actions: _buildAppBarActions(),
       ),
       body: OfflineBuilder(
@@ -264,12 +169,33 @@ class _CharactersScreenState extends State<CharactersScreen> {
           final bool connected = connectivity != ConnectivityResult.none;
 
           if (connected) {
-            return buildBlocWidget();
+            return BlocBuilder<GenericCubit<List<Character>?>,
+                    GenericCubitState<List<Character>?>>(
+                bloc: charactersScreenViewModel.charactersCubit,
+                builder: (
+                  context,
+                  state,
+                ) {
+                  return SingleChildScrollView(
+                    child: Container(
+                      color: MyColors.myGrey,
+                      child: Column(
+                        children: [
+                          BuildCharactersList(
+                            searchTextController: searchTextController,
+                            searchedForCharacters: searchedForCharacters,
+                            allCharacters: allCharacters,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
           } else {
-            return buildNoInternetWidget();
+            return const BuildNoInternetWidget();
           }
         },
-        child: showLoadingIndicator(),
+        child: const ShowLoadingIndicator(),
       ),
     );
   }

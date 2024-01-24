@@ -10,7 +10,9 @@ class Character {
   String? url;
   String? created;
 
-  Character.fromJson(Map<String, dynamic> json) {
+  Character.fromJson(
+    Map<String, dynamic> json,
+  ) {
     charId = json['id'];
     name = json['name'];
     status = json['status'];
